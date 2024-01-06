@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
     @Preview
     fun App() {
 
-        var themeMode = remember {mutableStateOf(true) }
+        var themeMode = remember {mutableStateOf(false) }
 
         TestMeTheme (darkTheme = themeMode.value){
             Scaffold(topBar = {
