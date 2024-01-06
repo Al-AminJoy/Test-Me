@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -15,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,11 +22,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.alamin.testme.ui.theme.Black
+import com.alamin.testme.view_model.HomeViewModel
 
 @Composable
 @Preview
 fun HomeScreen() {
+
+    val homeViewModel:HomeViewModel = hiltViewModel()
+
+    val categoryList = homeViewModel.categoryList.collectAsState()
+    val difficultyList = homeViewModel.difficultyList.collectAsState()
+    val questionTypeList = homeViewModel.questionTypeList.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,11 +49,11 @@ fun HomeScreen() {
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        CategoryItems()
+        CategoryItems(categoryList.value)
         Spacer(modifier = Modifier.height(20.dp))
-        DifficultyItems()
+        DifficultyItems(difficultyList.value)
         Spacer(modifier = Modifier.height(20.dp))
-        QuestionTypeItems()
+        QuestionTypeItems(questionTypeList.value)
 
     }
 
@@ -53,8 +62,7 @@ fun HomeScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuestionTypeItems() {
-    val questionTypeList = mutableListOf<String>("Any", "Multiple", "True/False")
+fun QuestionTypeItems(questionTypeList:MutableList<String>) {
     val isExpanded = remember {
         mutableStateOf(false)
     }
@@ -98,8 +106,7 @@ fun QuestionTypeItems() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryItems() {
-    val categoryList = mutableListOf<String>("Any", "History")
+fun CategoryItems(categoryList: MutableList<String>) {
     var isExpanded = remember { mutableStateOf(false) }
     val selectedCategory = remember {
         mutableStateOf("")
@@ -135,9 +142,7 @@ fun CategoryItems() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DifficultyItems() {
-
-    val difficultyList = mutableListOf<String>("Any", "Easy", "Medium", "Hard")
+fun DifficultyItems(difficultyList:MutableList<String>) {
 
     val isExpanded = remember {
         mutableStateOf(false)

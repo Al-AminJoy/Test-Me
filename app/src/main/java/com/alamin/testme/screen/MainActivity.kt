@@ -1,4 +1,4 @@
-package com.alamin.testme
+package com.alamin.testme.screen
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -40,7 +40,6 @@ import com.alamin.testme.ui.theme.TestMeTheme
 import com.alamin.testme.ui.theme.White
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -80,5 +79,6 @@ class MainActivity : ComponentActivity() {
 
 
     }
+
 }
 
