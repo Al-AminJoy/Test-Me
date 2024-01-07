@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,17 +46,22 @@ fun HomeScreen() {
 
     val questionResponse = homeViewModel.questionResponse.collectAsState()
 
-    when(questionResponse.value){
-        is NetworkResponse.Empty<*> -> {
-            
-        }
-        is NetworkResponse.Error<*> -> { }
-        is NetworkResponse.Loading<*> -> {
-            Log.d(TAG, "HomeScreen: Loading")
-        }
-        is NetworkResponse.Success<*> -> {
-            val data = questionResponse.value.data
-            Log.d(TAG, "HomeScreen: $data")
+    val requested = questionResponse.value
+
+    LaunchedEffect(key1 = requested ){
+        Log.d(TAG, "HomeScreen: RECALLED")
+        when(questionResponse.value){
+            is NetworkResponse.Empty<*> -> {
+
+            }
+            is NetworkResponse.Error<*> -> { }
+            is NetworkResponse.Loading<*> -> {
+                Log.d(TAG, "HomeScreen: Loading")
+            }
+            is NetworkResponse.Success<*> -> {
+                val data = questionResponse.value.data
+                Log.d(TAG, "HomeScreen: $data")
+            }
         }
     }
 
@@ -112,7 +119,7 @@ fun SubmitButton(
     selectedCategory: String,
     selectedDiffficulty: String,
     selectedType: String,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
     ElevatedButton(onClick = {
         Log.d(TAG, "SubmitButton: $selectedCategory $selectedDiffficulty $selectedType")

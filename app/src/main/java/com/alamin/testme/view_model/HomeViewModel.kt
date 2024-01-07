@@ -30,7 +30,7 @@ class HomeViewModel @Inject constructor(private val questionRepository: Question
                         type:String) {
 
         viewModelScope.launch {
-            delay(5000)
+            delay(2000)
             questionRepository.requestQuestion(amount,categoryId,difficulty,type)
         }
 
