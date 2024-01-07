@@ -38,7 +38,9 @@ import com.alamin.testme.screen.HomeScreen
 import com.alamin.testme.ui.theme.Pink40
 import com.alamin.testme.ui.theme.TestMeTheme
 import com.alamin.testme.ui.theme.White
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
