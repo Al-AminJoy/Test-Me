@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -34,11 +35,12 @@ import com.alamin.testme.ui.theme.Black
 import com.alamin.testme.view_model.HomeViewModel
 
 private const val TAG = "HomeScreen"
+
 @Composable
 @Preview
 fun HomeScreen() {
 
-    val homeViewModel:HomeViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
 
     val categoryList = homeViewModel.categoryList.collectAsState()
     val difficultyList = homeViewModel.difficultyList.collectAsState()
@@ -48,16 +50,18 @@ fun HomeScreen() {
 
     val requested = questionResponse.value
 
-    LaunchedEffect(key1 = requested ){
+    LaunchedEffect(key1 = requested) {
         Log.d(TAG, "HomeScreen: RECALLED")
-        when(questionResponse.value){
+        when (questionResponse.value) {
             is NetworkResponse.Empty<*> -> {
 
             }
-            is NetworkResponse.Error<*> -> { }
+
+            is NetworkResponse.Error<*> -> {}
             is NetworkResponse.Loading<*> -> {
                 Log.d(TAG, "HomeScreen: Loading")
             }
+
             is NetworkResponse.Success<*> -> {
                 val data = questionResponse.value.data
                 Log.d(TAG, "HomeScreen: $data")
@@ -66,10 +70,9 @@ fun HomeScreen() {
     }
 
 
-  //  Log.d(TAG, "HomeScreen: ${questionResponse.value..questions}")
+    //  Log.d(TAG, "HomeScreen: ${questionResponse.value..questions}")
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
@@ -95,19 +98,24 @@ fun HomeScreen() {
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        CategoryItems(categoryList.value,selectedCategory.value){
+        CategoryItems(categoryList.value, selectedCategory.value) {
             selectedCategory.value = it
         }
         Spacer(modifier = Modifier.height(20.dp))
-        DifficultyItems(difficultyList.value,selectedDiffficulty.value){
+        DifficultyItems(difficultyList.value, selectedDiffficulty.value) {
             selectedDiffficulty.value = it
         }
         Spacer(modifier = Modifier.height(20.dp))
-        QuestionTypeItems(questionTypeList.value,selectedType.value){
+        QuestionTypeItems(questionTypeList.value, selectedType.value) {
             selectedType.value = it
         }
         Spacer(modifier = Modifier.height(20.dp))
-        SubmitButton(selectedCategory.value,selectedDiffficulty.value,selectedType.value,homeViewModel)
+        SubmitButton(
+            selectedCategory.value,
+            selectedDiffficulty.value,
+            selectedType.value,
+            homeViewModel
+        )
 
     }
 
@@ -123,15 +131,24 @@ fun SubmitButton(
 ) {
     ElevatedButton(onClick = {
         Log.d(TAG, "SubmitButton: $selectedCategory $selectedDiffficulty $selectedType")
-          homeViewModel.requestQuestion(10,12,selectedDiffficulty.lowercase(),selectedType.lowercase())
-    }, shape = RoundedCornerShape(8.dp)) {
+        homeViewModel.requestQuestion(
+            10,
+            12,
+            selectedDiffficulty.lowercase(),
+            selectedType.lowercase()
+        )
+    }, shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
         Text(text = "Start", color = MaterialTheme.colorScheme.primary)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuestionTypeItems(questionTypeList: MutableList<String>, selectedType: String,onSelect: (String) -> Unit) {
+fun QuestionTypeItems(
+    questionTypeList: MutableList<String>,
+    selectedType: String,
+    onSelect: (String) -> Unit
+) {
     val isExpanded = remember {
         mutableStateOf(false)
     }
@@ -141,14 +158,14 @@ fun QuestionTypeItems(questionTypeList: MutableList<String>, selectedType: Strin
         expanded = isExpanded.value,
         onExpandedChange = { newValue -> isExpanded.value = newValue }) {
 
-        TextField(
+        OutlinedTextField(
             value = selectedType, onValueChange = {}, readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = isExpanded.value
                 )
             },
-            placeholder = { Text(text = "Select Question Type")},
+            placeholder = { Text(text = "Select Question Type") },
             colors = ExposedDropdownMenuDefaults.textFieldColors(textColor = Black),
             modifier = Modifier
                 .menuAnchor()
@@ -158,7 +175,7 @@ fun QuestionTypeItems(questionTypeList: MutableList<String>, selectedType: Strin
         ExposedDropdownMenu(
             expanded = isExpanded.value,
             onDismissRequest = { isExpanded.value = false }) {
-            for (type in questionTypeList){
+            for (type in questionTypeList) {
                 DropdownMenuItem(text = { Text(text = type) }, onClick = {
                     isExpanded.value = false
                     onSelect(type)
@@ -173,7 +190,7 @@ fun QuestionTypeItems(questionTypeList: MutableList<String>, selectedType: Strin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryItems(categoryList: MutableList<String>, value: String,onSelect: (String) -> Unit) {
+fun CategoryItems(categoryList: MutableList<String>, value: String, onSelect: (String) -> Unit) {
     var isExpanded = remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(expanded = isExpanded.value, onExpandedChange = { newValue ->
@@ -207,7 +224,11 @@ fun CategoryItems(categoryList: MutableList<String>, value: String,onSelect: (St
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DifficultyItems(difficultyList: MutableList<String>, selectedDiffficulty: String,onSelect: (String) -> Unit) {
+fun DifficultyItems(
+    difficultyList: MutableList<String>,
+    selectedDiffficulty: String,
+    onSelect: (String) -> Unit
+) {
 
     val isExpanded = remember {
         mutableStateOf(false)
