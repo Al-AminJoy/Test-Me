@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,8 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +49,10 @@ fun HomeScreen() {
     val categoryList = homeViewModel.categoryList.collectAsState()
     val difficultyList = homeViewModel.difficultyList.collectAsState()
     val questionTypeList = homeViewModel.questionTypeList.collectAsState()
+
+/*    val categoryList = arrayListOf("Any", "History")
+    val difficultyList = arrayListOf("Any", "Easy", "Medium", "Hard")
+    val questionTypeList = arrayListOf("Any", "Multiple", "True/False")*/
 
     val questionResponse = homeViewModel.questionResponse.collectAsState()
 
@@ -77,8 +85,6 @@ fun HomeScreen() {
             .fillMaxSize()
             .padding(8.dp)
     ) {
-
-
         val selectedCategory = remember {
             mutableStateOf("")
         }
@@ -116,10 +122,7 @@ fun HomeScreen() {
             selectedType.value,
             homeViewModel
         )
-
     }
-
-
 }
 
 @Composable
@@ -149,20 +152,19 @@ fun QuestionTypeItems(
     selectedType: String,
     onSelect: (String) -> Unit
 ) {
-    val isExpanded = remember {
+    var isExpanded by remember {
         mutableStateOf(false)
     }
 
-
     ExposedDropdownMenuBox(
-        expanded = isExpanded.value,
-        onExpandedChange = { newValue -> isExpanded.value = newValue }) {
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = !isExpanded }) {
 
         OutlinedTextField(
             value = selectedType, onValueChange = {}, readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = isExpanded.value
+                    expanded = isExpanded
                 )
             },
             placeholder = { Text(text = "Select Question Type") },
@@ -173,11 +175,11 @@ fun QuestionTypeItems(
         )
 
         ExposedDropdownMenu(
-            expanded = isExpanded.value,
-            onDismissRequest = { isExpanded.value = false }) {
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }) {
             for (type in questionTypeList) {
                 DropdownMenuItem(text = { Text(text = type) }, onClick = {
-                    isExpanded.value = false
+                    isExpanded = false
                     onSelect(type)
                 })
             }
@@ -191,17 +193,17 @@ fun QuestionTypeItems(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryItems(categoryList: MutableList<String>, value: String, onSelect: (String) -> Unit) {
-    var isExpanded = remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(expanded = isExpanded.value, onExpandedChange = { newValue ->
-        isExpanded.value = newValue
+    ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = {
+        isExpanded = !isExpanded
     }) {
-        TextField(
+        OutlinedTextField(
             value = value,
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded.value)
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
             },
             placeholder = { Text(text = "Select Category") },
             colors = ExposedDropdownMenuDefaults.textFieldColors(textColor = Black),
@@ -210,12 +212,12 @@ fun CategoryItems(categoryList: MutableList<String>, value: String, onSelect: (S
                 .fillMaxWidth()
         )
         ExposedDropdownMenu(
-            expanded = isExpanded.value,
-            onDismissRequest = { isExpanded.value = false }) {
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }) {
             for (category in categoryList) {
                 DropdownMenuItem(text = { Text(text = category) }, onClick = {
                     onSelect(category)
-                    isExpanded.value = false
+                    isExpanded = false
                 })
             }
         }
@@ -230,22 +232,21 @@ fun DifficultyItems(
     onSelect: (String) -> Unit
 ) {
 
-    val isExpanded = remember {
+    var isExpanded by remember {
         mutableStateOf(false)
     }
 
 
-    ExposedDropdownMenuBox(expanded = isExpanded.value, onExpandedChange = { newValue ->
-        isExpanded.value = newValue
+    ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = { isExpanded = !isExpanded
     }) {
 
-        TextField(
+        OutlinedTextField(
             value = selectedDiffficulty,
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = isExpanded.value
+                    expanded = isExpanded
                 )
             },
             placeholder = { Text(text = "Select Difficulty") },
@@ -255,15 +256,16 @@ fun DifficultyItems(
                 .fillMaxWidth()
         )
 
-        ExposedDropdownMenu(
-            expanded = isExpanded.value,
-            onDismissRequest = { isExpanded.value = false }) {
-            for (difficulty in difficultyList) {
+        DropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }) {
+            difficultyList.forEach{ difficulty ->
                 DropdownMenuItem(text = { Text(text = difficulty) }, onClick = {
-                    isExpanded.value = false
+                    isExpanded = false
                     onSelect(difficulty)
                 })
             }
+
         }
 
     }
