@@ -46,7 +46,6 @@ import kotlin.math.log
 private const val TAG = "HomeScreen"
 
 @Composable
-@Preview
 fun HomeScreen(navController: NavHostController) {
 
     val homeViewModel: HomeViewModel = hiltViewModel()
@@ -91,9 +90,10 @@ fun HomeScreen(navController: NavHostController) {
                 val data = questionResponse.value.data
                 //Log.d(TAG, "HomeScreen: $data")
                 showLoading = false
-                val json = Gson().toJson(data)
+                val json = Gson().toJson(data).toString()
                 Log.d(TAG, "HomeScreen: $json")
-                navController.navigate(route = "question/${json}")
+                navController.currentBackStackEntry?.savedStateHandle?.set(key = "questions",value = data)
+                navController.navigate(route = "question")
             }
         }
     }

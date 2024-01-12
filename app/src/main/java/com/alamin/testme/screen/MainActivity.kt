@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -91,18 +92,14 @@ class MainActivity : ComponentActivity() {
             composable(route = "home") {
                 HomeScreen(navController)
             }
-            composable(route = "question/{questions}", arguments = listOf(
+            composable(route = "question" /*arguments = listOf(
                 navArgument("questions"){type = NavType.StringType}
-            )){
+            )*/){
 
-                val questionListJson =  it.arguments!!.getString("questions")
-
-               /* val questionList: List<Question> =
-                    Gson().fromJson(questionListJson, object : TypeToken<List<Question>>() {}.type)*/
-
-                //val questionList: Array<Question> = Gson().fromJson(questionListJson, Array<Question>::class.java)
-
-                Log.d(TAG, "App: $questionListJson")
+               LaunchedEffect(key1 = it){
+                   val result = navController.previousBackStackEntry?.savedStateHandle?.get<List<Question>?>("questions")
+                   Log.d(TAG, "App: $result")
+               }
 
             }
         }
