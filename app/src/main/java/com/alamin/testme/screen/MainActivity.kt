@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.alamin.testme.model.data.Question
 import com.alamin.testme.ui.theme.TestMeTheme
+import com.alamin.testme.utils.SetupNavGraph
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,26 +86,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     @Preview
     fun App() {
-
         val navController = rememberNavController()
-
-        NavHost(navController = navController, startDestination = "home") {
-            composable(route = "home") {
-                HomeScreen(navController)
-            }
-            composable(route = "question" /*arguments = listOf(
-                navArgument("questions"){type = NavType.StringType}
-            )*/){
-
-               LaunchedEffect(key1 = it){
-                   val result = navController.previousBackStackEntry?.savedStateHandle?.get<List<Question>?>("questions")
-                   Log.d(TAG, "App: $result")
-               }
-
-            }
-        }
-
-
+        SetupNavGraph(navController = navController)
     }
 
 }

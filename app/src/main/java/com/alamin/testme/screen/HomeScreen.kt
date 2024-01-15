@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alamin.testme.model.data.NetworkResponse
 import com.alamin.testme.ui.theme.Black
+import com.alamin.testme.utils.Screen
 import com.alamin.testme.view_model.HomeViewModel
 import com.google.gson.Gson
 import kotlin.math.log
@@ -93,7 +94,7 @@ fun HomeScreen(navController: NavHostController) {
                 val json = Gson().toJson(data).toString()
                 Log.d(TAG, "HomeScreen: $json")
                 navController.currentBackStackEntry?.savedStateHandle?.set(key = "questions",value = data)
-                navController.navigate(route = "question")
+                navController.navigate(route = Screen.Question.route)
             }
         }
     }
