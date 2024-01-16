@@ -21,7 +21,7 @@ fun SetupNavGraph( navController: NavHostController) {
             )*/){
 
             val questions = navController.previousBackStackEntry?.savedStateHandle?.get<List<Question>?>("questions")
-            QuestionScreen(navController,questions)
+            QuestionScreen(navController,questions as MutableList<Question>)
 
         }
     }

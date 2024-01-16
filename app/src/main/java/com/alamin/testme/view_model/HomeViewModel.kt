@@ -64,7 +64,7 @@ class HomeViewModel @Inject constructor(private val questionRepository: Question
 
 
                 questionRepository.requestQuestion(
-                    2,
+                    10,
                     12,
                     difficulty.lowercase(),
                     questionType.lowercase()
