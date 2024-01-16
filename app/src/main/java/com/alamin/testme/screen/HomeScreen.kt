@@ -59,11 +59,10 @@ fun HomeScreen(navController: NavHostController) {
         val difficultyList = arrayListOf("Any", "Easy", "Medium", "Hard")
         val questionTypeList = arrayListOf("Any", "Multiple", "True/False")*/
 
+
     var showLoading by remember {
         mutableStateOf(false)
     }
-
-    val questionResponse = homeViewModel.questionResponse.collectAsState()
 
     ShowToastMessage(homeViewModel)
 
@@ -71,30 +70,31 @@ fun HomeScreen(navController: NavHostController) {
         Loader()
     }
 
-    //val requested = questionResponse.value
+    LaunchedEffect(key1 = Unit) {
+        homeViewModel.questionResponse.collect{
+            when (it) {
+                is NetworkResponse.Empty -> {
 
-    LaunchedEffect(key1 = questionResponse.value) {
-        when (questionResponse.value) {
-            is NetworkResponse.Empty<*> -> {
+                }
 
-            }
+                is NetworkResponse.Error -> {
+                    showLoading = false
+                }
 
-            is NetworkResponse.Error<*> -> {
-                showLoading = false
-            }
+                is NetworkResponse.Loading -> {
+                    showLoading = true
+                }
 
-            is NetworkResponse.Loading<*> -> {
-                showLoading = true
-            }
-
-            is NetworkResponse.Success<*> -> {
-                val data = questionResponse.value.data
-                //Log.d(TAG, "HomeScreen: $data")
-                showLoading = false
-                val json = Gson().toJson(data).toString()
-                Log.d(TAG, "HomeScreen: $json")
-                navController.currentBackStackEntry?.savedStateHandle?.set(key = "questions",value = data)
-                navController.navigate(route = Screen.Question.route)
+                is NetworkResponse.Success -> {
+                    val data = it.data
+                    showLoading = false
+                    val json = Gson().toJson(data).toString()
+                    Log.d(TAG, "HomeScreen: $json")
+                    navController.currentBackStackEntry?.savedStateHandle?.set(key = "questions",value = data)
+                    navController.navigate(route = Screen.Question.route){
+                        popUpTo(Screen.Home.route)
+                    }
+                }
             }
         }
     }

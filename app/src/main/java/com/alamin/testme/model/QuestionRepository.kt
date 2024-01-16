@@ -5,7 +5,9 @@ import com.alamin.testme.model.data.NetworkResponse
 import com.alamin.testme.model.data.Question
 import com.alamin.testme.model.data.QuestionResponse
 import com.alamin.testme.model.network.APIInterface
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.http.Query
 import javax.inject.Inject
@@ -13,8 +15,8 @@ import javax.inject.Inject
 private const val TAG = "QuestionRepository"
 class QuestionRepository @Inject constructor(private val apiInterface: APIInterface) {
 
-    private val _questionResponse = MutableStateFlow<NetworkResponse<List<Question>>>(NetworkResponse.Empty())
-    val questionResponse = _questionResponse.asStateFlow()
+    private val _questionResponse = MutableSharedFlow<NetworkResponse<List<Question>>>()
+    val questionResponse = _questionResponse.asSharedFlow()
 
 
     suspend fun requestQuestion(amount:Int,

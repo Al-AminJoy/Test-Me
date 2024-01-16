@@ -23,9 +23,7 @@ import com.alamin.testme.view_model.QuestionViewModel
 @Composable
 fun QuestionScreen(navController: NavHostController, questions: List<Question>?) {
 
-    BackHandler {
-        navController.popBackStack()
-    }
+
 
 
     val questionViewModel:QuestionViewModel = hiltViewModel()
