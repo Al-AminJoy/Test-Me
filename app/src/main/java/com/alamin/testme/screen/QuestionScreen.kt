@@ -53,19 +53,6 @@ fun QuestionScreen(navController: NavHostController, questions: MutableList<Ques
 
     questionViewModel.setQuestionList(questions)
 
-/*    var newQuestionList by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(key1 = questions){
-        newQuestionList = true
-    }*/
-
-   // val question = questionViewModel.getQuestion()
-
-/*    if (newQuestionList){
-
-    }*/
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -91,7 +78,7 @@ fun QuestionScreen(navController: NavHostController, questions: MutableList<Ques
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = questionViewModel.getQuestion().question,
+                    text = questionViewModel.getQuestion(),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -100,14 +87,10 @@ fun QuestionScreen(navController: NavHostController, questions: MutableList<Ques
 
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                /* val questions= (question.incorrectAnswers as MutableList)
-                 questions.add(question.correctAnswer)*/
-                val question = questionViewModel.getQuestion()
-                val questionSet = question.incorrectAnswers as MutableList
-               // questionSet.add(question.correctAnswer)
+
                 LazyColumn(contentPadding = PaddingValues(horizontal = 8.dp)) {
 
-                    items(questionSet) {
+                    items(questionViewModel.getAnswers()) {
                         Text(
                             text = it,
                             color = White,

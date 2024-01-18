@@ -28,9 +28,17 @@ class QuestionViewModel @Inject constructor():ViewModel() {
         _questionList.addAll(questionList)
     }
 
-    fun getQuestion():Question{
+    fun getQuestion():String{
         Log.d(TAG, "getQuestion: ")
-        return _questionList[questionNo]
+        return _questionList[questionNo].question
+    }
+
+    fun getAnswers():List<String>{
+        val question = _questionList[questionNo]
+        val questionSet = arrayListOf<String>()
+        questionSet.addAll(question.incorrectAnswers)
+        questionSet.add(question.correctAnswer)
+        return questionSet
     }
 
 }

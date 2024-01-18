@@ -1,6 +1,12 @@
 package com.alamin.testme.utils
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,8 +26,18 @@ fun SetupNavGraph( navController: NavHostController) {
                 navArgument("questions"){type = NavType.StringType}
             )*/){
 
+            var valueUpdated by remember {
+                mutableStateOf(false)
+            }
             val questions = navController.previousBackStackEntry?.savedStateHandle?.get<List<Question>?>("questions")
-            QuestionScreen(navController,questions as MutableList<Question>)
+
+            LaunchedEffect(key1 = Unit){
+               Log.d(TAG, "SetupNavGraph: ")
+               valueUpdated = true
+           }
+            if (valueUpdated){
+                QuestionScreen(navController,questions as MutableList<Question>)
+            }
 
         }
     }
