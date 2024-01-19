@@ -26,17 +26,9 @@ fun SetupNavGraph( navController: NavHostController) {
                 navArgument("questions"){type = NavType.StringType}
             )*/){
 
-            var valueUpdated by remember {
-                mutableStateOf(false)
-            }
             val questions = navController.previousBackStackEntry?.savedStateHandle?.get<List<Question>?>("questions")
-
-            LaunchedEffect(key1 = Unit){
-               Log.d(TAG, "SetupNavGraph: ")
-               valueUpdated = true
-           }
-            if (valueUpdated){
-                QuestionScreen(navController,questions as MutableList<Question>)
+            questions?.let {
+                QuestionScreen(navController,questions)
             }
 
         }

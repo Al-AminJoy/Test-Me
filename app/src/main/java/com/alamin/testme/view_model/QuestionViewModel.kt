@@ -6,39 +6,65 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.alamin.testme.model.data.Question
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 private const val TAG = "QuestionViewModel"
+
 @HiltViewModel
-class QuestionViewModel @Inject constructor():ViewModel() {
+class QuestionViewModel @Inject constructor() : ViewModel() {
     var questionNo by mutableStateOf(0)
-    private val _questionList = mutableStateListOf<Question>()
+    val _questionList = mutableStateListOf<Question>()
+    val message = MutableSharedFlow<String>()
 
-    fun increaseQuestion(){
-        questionNo++
+    fun increaseQuestion() {
+        Log.d(TAG, "increaseQuestion: ${_questionList.size} $questionNo")
+        if (_questionList.size - 1 > questionNo) {
+            questionNo++
+        } else {
+            viewModelScope.launch {
+                message.emit("Out of Index")
+            }
+        }
     }
 
-    fun decreaseQuestion(){
-        questionNo--
+    fun decreaseQuestion() {
+        Log.d(TAG, "decreaseQuestion: ${_questionList.size} $questionNo")
+
+        if (questionNo > 0) {
+            questionNo--
+        } else {
+            viewModelScope.launch {
+                message.emit("Out of Index")
+            }
+        }
+
     }
 
-    fun setQuestionList(questionList:MutableList<Question>){
+    fun setQuestionList(questionList: List<Question>) {
         _questionList.addAll(questionList)
     }
 
-    fun getQuestion():String{
-        Log.d(TAG, "getQuestion: ")
+    fun getQuestion(): String {
         return _questionList[questionNo].question
     }
 
-    fun getAnswers():List<String>{
+    fun getCorrectAnswer(): String {
+        val question = _questionList[questionNo]
+        return question.correctAnswer
+    }
+
+    fun getAnswers(): List<String> {
         val question = _questionList[questionNo]
         val questionSet = arrayListOf<String>()
         questionSet.addAll(question.incorrectAnswers)
         questionSet.add(question.correctAnswer)
-        return questionSet
+        return questionSet.shuffled()
     }
 
 }
