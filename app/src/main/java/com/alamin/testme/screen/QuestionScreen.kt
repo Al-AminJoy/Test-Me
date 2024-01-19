@@ -2,6 +2,7 @@ package com.alamin.testme.screen
 
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
@@ -23,6 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,21 +45,69 @@ import com.alamin.testme.ui.theme.White
 import com.alamin.testme.view_model.QuestionViewModel
 
 private const val TAG = "QuestionScreen"
+
 @Composable
 fun QuestionScreen(navController: NavHostController, questions: List<Question>) {
+
+    var isBackPressed by remember {
+        mutableStateOf(false)
+    }
+    var isOpenDialog by remember {
+        mutableStateOf(false)
+    }
+
+    BackHandler {
+        isBackPressed = true
+        isOpenDialog = true
+    }
+
+
+
+
+    if (isBackPressed) {
+        if (isOpenDialog) {
+            AlertDialog(
+                title = {
+                    Text(text = "Warning !")
+                }, text = { Text(text = "Do You Want to Cancel Exam ?") },
+                onDismissRequest = {
+                    isOpenDialog = false
+                    isBackPressed = false
+                }, confirmButton = {
+                    Button(onClick = {
+                        isOpenDialog = false
+                        isBackPressed = false
+                        navController.popBackStack()
+                    }) {
+                        Text(text = "Confirm")
+                    }
+
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        isOpenDialog = false
+                        isBackPressed = false
+                    }) {
+                        Text(text = "Dismiss")
+                    }
+                })
+        }
+
+
+    }
 
     val questionViewModel: QuestionViewModel = hiltViewModel()
     Log.d(TAG, "QuestionScreen: ")
 
     ShowMessage(questionViewModel)
 
-    if (questionViewModel._questionList.isEmpty()){
+    if (questionViewModel._questionList.isEmpty()) {
         Log.d(TAG, "QuestionScreen: Set")
 
         questionViewModel.setQuestionList(questions)
     }
 
-    if (questionViewModel._questionList.isNotEmpty()){
+    if (questionViewModel._questionList.isNotEmpty()) {
         Log.d(TAG, "QuestionScreen: Render")
 
         Column(
@@ -139,8 +194,8 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
 @Composable
 fun ShowMessage(questionViewModel: QuestionViewModel) {
     val context = LocalContext.current
-    LaunchedEffect(key1 = Unit){
-        questionViewModel.message.collect{
+    LaunchedEffect(key1 = Unit) {
+        questionViewModel.message.collect {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }

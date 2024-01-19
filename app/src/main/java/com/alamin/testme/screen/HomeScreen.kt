@@ -91,9 +91,9 @@ fun HomeScreen(navController: NavHostController) {
                     val json = Gson().toJson(data).toString()
                     Log.d(TAG, "HomeScreen: $json")
                     navController.currentBackStackEntry?.savedStateHandle?.set(key = "questions",value = data)
-                    navController.navigate(route = Screen.Question.route){
+                    navController.navigate(route = Screen.Question.route)/*{
                         popUpTo(Screen.Home.route)
-                    }
+                    }*/
                 }
             }
         }
