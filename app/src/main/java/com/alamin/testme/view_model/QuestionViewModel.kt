@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,13 +22,19 @@ class QuestionViewModel @Inject constructor() : ViewModel() {
     var questionNo by mutableStateOf(0)
     val _questionList = mutableStateListOf<Question>()
     val message = MutableSharedFlow<String>()
+    var selectedAnswer by
+        mutableStateOf("")
+
 
     fun increaseQuestion() {
         Log.d(TAG, "increaseQuestion: ${_questionList.size} $questionNo")
-        if (_questionList.size - 1 > questionNo) {
+        viewModelScope.launch {
+        if(selectedAnswer.isEmpty()){
+            message.emit("Select Answer First")
+        }else if (_questionList.size - 1 > questionNo) {
             questionNo++
+            selectedAnswer = ""
         } else {
-            viewModelScope.launch {
                 message.emit("Out of Index")
             }
         }

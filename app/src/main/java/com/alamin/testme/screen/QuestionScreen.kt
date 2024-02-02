@@ -51,11 +51,9 @@ private const val TAG = "QuestionScreen"
 @Composable
 fun QuestionScreen(navController: NavHostController, questions: List<Question>) {
 
-
     var isOpenDialog by remember {
         mutableStateOf(false)
     }
-
 
 
     BackHandler {
@@ -91,20 +89,21 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
     val questionViewModel: QuestionViewModel = hiltViewModel()
     Log.d(TAG, "QuestionScreen: ")
 
-    var nextQuestionIndex by remember {
-        mutableStateOf(questionViewModel.questionNo+1)
-    }
+
 
     ShowMessage(questionViewModel)
 
     if (questionViewModel._questionList.isEmpty()) {
-        Log.d(TAG, "QuestionScreen: Set")
-
         questionViewModel.setQuestionList(questions)
     }
 
     if (questionViewModel._questionList.isNotEmpty()) {
-        Log.d(TAG, "QuestionScreen: Render")
+        Log.d(TAG, "QuestionScreen: Inside")
+
+        val question = questionViewModel.getQuestion()
+        val answers = questionViewModel.getAnswers()
+
+
 
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -124,24 +123,19 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            QuestionCard(questionViewModel)
-
+            QuestionCard(question, answers){
+                questionViewModel.selectedAnswer = it
+            }
 
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = if (questionViewModel.questionNo == 9) Arrangement.Center else Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ElevatedButton(onClick = {
-                    questionViewModel.decreaseQuestion()
-                }) {
-                    Text(text = "Previous")
-                }
-                ElevatedButton(onClick = {
                     questionViewModel.increaseQuestion()
-                    nextQuestionIndex = questionViewModel.questionNo
                 }) {
-                    Text(text = "Next")
+                    Text(text = if (questionViewModel.questionNo == 9) "Show Result" else "Next")
                 }
             }
 
@@ -153,14 +147,18 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
 }
 
 @Composable
-fun QuestionCard(questionViewModel: QuestionViewModel) {
+fun QuestionCard(
+    question: String,
+    answer: List<String>,
+    selectedAnswerListener: (String) -> Unit
+) {
     ElevatedCard(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.padding(8.dp)
         ) {
             Text(
-                text = questionViewModel.getQuestion(),
+                text = question,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -169,17 +167,13 @@ fun QuestionCard(questionViewModel: QuestionViewModel) {
 
             )
             Spacer(modifier = Modifier.height(8.dp))
-
-            var selectedOption by remember {
+            var selectedOption  = remember {
                 mutableStateOf("")
-            }
-            val onSelectionChange = { text: String ->
-                selectedOption = text
             }
 
             LazyColumn(contentPadding = PaddingValues(horizontal = 8.dp)) {
 
-                items(questionViewModel.getAnswers()) {
+                items(answer) {
 
                     Text(
                         text = it,
@@ -189,11 +183,12 @@ fun QuestionCard(questionViewModel: QuestionViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onSelectionChange(it)
-
+                                //onSelectionChange(it)
+                                selectedOption.value = it
+                                selectedAnswerListener(it)
                             }
                             .background(
-                                color = if (selectedOption == it) Green else MaterialTheme.colorScheme.tertiary,
+                                color = if (selectedOption.value == it) Green else MaterialTheme.colorScheme.tertiary,
                                 shape = RoundedCornerShape(size = 8.dp)
                             )
                             .padding(8.dp)
