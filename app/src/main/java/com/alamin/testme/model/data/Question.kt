@@ -18,5 +18,6 @@ data class Question(
     @SerializedName("question")
     val question: String,
     @SerializedName("type")
-    val type: String
+    val type: String,
+    var answered: String? = null
 ):Parcelable

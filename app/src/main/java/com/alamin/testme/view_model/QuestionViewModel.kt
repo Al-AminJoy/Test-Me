@@ -2,6 +2,7 @@ package com.alamin.testme.view_model
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,8 +20,8 @@ private const val TAG = "QuestionViewModel"
 
 @HiltViewModel
 class QuestionViewModel @Inject constructor() : ViewModel() {
-    var questionNo by mutableStateOf(0)
-    val _questionList = mutableStateListOf<Question>()
+    var questionNo by mutableIntStateOf(0)
+    val questionList = mutableStateListOf<Question>()
     val message = MutableSharedFlow<String>()
     var selectedAnswer by
         mutableStateOf("")
@@ -28,34 +29,34 @@ class QuestionViewModel @Inject constructor() : ViewModel() {
     var openResultDialog by
         mutableStateOf(false)
 
-    var correctAnswerCount by mutableStateOf(0)
+    var correctAnswerCount by mutableIntStateOf(0)
 
 
 
     fun increaseQuestion() {
-        Log.d(TAG, "increaseQuestion: ${_questionList.size} $questionNo")
+        Log.d(TAG, "increaseQuestion: ${questionList.size} $questionNo")
         viewModelScope.launch {
         if(selectedAnswer.isEmpty()){
             message.emit("Select Answer First")
-        }else if (_questionList.size - 1 > questionNo) {
+        }else if (questionList.size - 1 > questionNo) {
             if (selectedAnswer.trim().equals(getCorrectAnswer())){
                 correctAnswerCount++
             }
+            getQuestion().answered = selectedAnswer
             questionNo++
             selectedAnswer = ""
         } else {
             if (selectedAnswer.trim().equals(getCorrectAnswer())){
                 correctAnswerCount++
             }
+            getQuestion().answered = selectedAnswer
             openResultDialog = true
-            message.emit("Out of Index")
+            Log.d(TAG, "increaseQuestion: ${questionList.toList()}")
             }
         }
     }
 
     fun decreaseQuestion() {
-        Log.d(TAG, "decreaseQuestion: ${_questionList.size} $questionNo")
-
         if (questionNo > 0) {
             questionNo--
         } else {
@@ -63,24 +64,23 @@ class QuestionViewModel @Inject constructor() : ViewModel() {
                 message.emit("Out of Index")
             }
         }
-
     }
 
     fun setQuestionList(questionList: List<Question>) {
-        _questionList.addAll(questionList)
+        this.questionList.addAll(questionList)
     }
 
-    fun getQuestion(): String {
-        return _questionList[questionNo].question
+    fun getQuestion(): Question {
+        return questionList[questionNo]
     }
 
     private fun getCorrectAnswer(): String {
-        val question = _questionList[questionNo]
+        val question = questionList[questionNo]
         return question.correctAnswer
     }
 
     fun getAnswers(): List<String> {
-        val question = _questionList[questionNo]
+        val question = questionList[questionNo]
         val questionSet = arrayListOf<String>()
         questionSet.addAll(question.incorrectAnswers)
         questionSet.add(question.correctAnswer)

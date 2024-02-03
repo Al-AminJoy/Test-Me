@@ -139,11 +139,11 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
 
     ShowMessage(questionViewModel)
 
-    if (questionViewModel._questionList.isEmpty()) {
+    if (questionViewModel.questionList.isEmpty()) {
         questionViewModel.setQuestionList(questions)
     }
 
-    if (questionViewModel._questionList.isNotEmpty()) {
+    if (questionViewModel.questionList.isNotEmpty()) {
         Log.d(TAG, "QuestionScreen: Inside")
 
         val question = questionViewModel.getQuestion()
@@ -194,7 +194,7 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
 
 @Composable
 fun QuestionCard(
-    question: String,
+    question: Question,
     answer: List<String>,
     selectedAnswerListener: (String) -> Unit
 ) {
@@ -204,7 +204,7 @@ fun QuestionCard(
             modifier = Modifier.padding(8.dp)
         ) {
             Text(
-                text = question,
+                text = question.question,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -229,7 +229,6 @@ fun QuestionCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                //onSelectionChange(it)
                                 selectedOption.value = it
                                 selectedAnswerListener(it)
                             }
