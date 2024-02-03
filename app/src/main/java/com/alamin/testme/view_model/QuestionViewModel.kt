@@ -25,6 +25,12 @@ class QuestionViewModel @Inject constructor() : ViewModel() {
     var selectedAnswer by
         mutableStateOf("")
 
+    var openResultDialog by
+        mutableStateOf(false)
+
+    var correctAnswerCount by mutableStateOf(0)
+
+
 
     fun increaseQuestion() {
         Log.d(TAG, "increaseQuestion: ${_questionList.size} $questionNo")
@@ -32,10 +38,17 @@ class QuestionViewModel @Inject constructor() : ViewModel() {
         if(selectedAnswer.isEmpty()){
             message.emit("Select Answer First")
         }else if (_questionList.size - 1 > questionNo) {
+            if (selectedAnswer.trim().equals(getCorrectAnswer())){
+                correctAnswerCount++
+            }
             questionNo++
             selectedAnswer = ""
         } else {
-                message.emit("Out of Index")
+            if (selectedAnswer.trim().equals(getCorrectAnswer())){
+                correctAnswerCount++
+            }
+            openResultDialog = true
+            message.emit("Out of Index")
             }
         }
     }
@@ -61,7 +74,7 @@ class QuestionViewModel @Inject constructor() : ViewModel() {
         return _questionList[questionNo].question
     }
 
-    fun getCorrectAnswer(): String {
+    private fun getCorrectAnswer(): String {
         val question = _questionList[questionNo]
         return question.correctAnswer
     }

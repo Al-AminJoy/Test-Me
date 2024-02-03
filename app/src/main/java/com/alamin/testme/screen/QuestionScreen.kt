@@ -14,17 +14,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alamin.testme.model.data.Question
@@ -54,6 +60,11 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
     var isOpenDialog by remember {
         mutableStateOf(false)
     }
+
+
+    val questionViewModel: QuestionViewModel = hiltViewModel()
+    Log.d(TAG, "QuestionScreen: ")
+
 
 
     BackHandler {
@@ -86,8 +97,43 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
     }
 
 
-    val questionViewModel: QuestionViewModel = hiltViewModel()
-    Log.d(TAG, "QuestionScreen: ")
+    if (questionViewModel.openResultDialog) {
+        Dialog(onDismissRequest = {
+            questionViewModel.openResultDialog = true
+        }) {
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(containerColor = White)
+            ) {
+                Column(
+                   // horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(8.dp, 20.dp)
+                ) {
+                    Text(text = "Congratulations !", color = Green, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "You answered ${questionViewModel.correctAnswerCount} correct answer out of 10 Question.",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row (horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()){
+                        TextButton(onClick = {
+                            questionViewModel.openResultDialog = false
+                            navController.popBackStack()
+                        }) {
+                            Text(text = "Ok", color = Green)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
 
@@ -123,7 +169,7 @@ fun QuestionScreen(navController: NavHostController, questions: List<Question>) 
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            QuestionCard(question, answers){
+            QuestionCard(question, answers) {
                 questionViewModel.selectedAnswer = it
             }
 
@@ -167,7 +213,7 @@ fun QuestionCard(
 
             )
             Spacer(modifier = Modifier.height(8.dp))
-            var selectedOption  = remember {
+            var selectedOption = remember {
                 mutableStateOf("")
             }
 
